@@ -1,0 +1,30 @@
+{
+  "id": "./",
+  "name": "和弦研究室",
+  "short_name": "和弦研究室",
+  "description": "鋼琴和弦教學、轉位與伴奏練習。可離線使用。",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f1e8",
+  "theme_color": "#283e3a",
+  "categories": [
+    "education",
+    "music"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

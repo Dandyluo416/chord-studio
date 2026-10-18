@@ -1,5 +1,5 @@
 /* Change VERSION whenever any shell asset changes. Updates activate on request. */
-const VERSION='1.4.0';
+const VERSION='1.4.1';
 const PREFIX='chord-studio-shell-';
 const CACHE=PREFIX+VERSION;
 const BASE=new URL('./',self.location.href);

@@ -1,9 +1,9 @@
 /* Change VERSION whenever any shell asset changes. Updates activate on request. */
-const VERSION='1.4.1';
+const VERSION='2.1.0-preview.1';
 const PREFIX='chord-studio-shell-';
 const CACHE=PREFIX+VERSION;
 const BASE=new URL('./',self.location.href);
-const ASSETS=['index.html','manifest.webmanifest','icon-192.png','icon-512.png','apple-touch-icon.png'];
+const ASSETS=['index.html','manifest.webmanifest','icon-192.png','icon-512.png','apple-touch-icon.png','css/legacy-1.css','css/ui-v2.css','js/chord-engine.js','js/piano-samples.js','js/ui-v2.js','js/legacy-1.js','js/legacy-2.js','js/legacy-3.js','js/legacy-4.js','css/ui-v21.css','js/harmony-engine.js','js/poly-engine.js','js/ui-v21.js','assets/piano-studio.png'];
 self.addEventListener('install',event=>event.waitUntil((async()=>{
  const cache=await caches.open(CACHE);
  await cache.addAll(ASSETS.map(path=>new Request(new URL(path,BASE),{cache:'reload'})));

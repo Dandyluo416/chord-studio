@@ -1,0 +1,12 @@
+/* Experimental target-independent spectral polyphony. No chord target enters detect(). */
+(function(g){'use strict';
+function detect(db,sampleRate,fftSize,noise=null){const bin=sampleRate/fftSize,peaks=[];let loud=-120;for(let i=2;i<Math.min(db.length-3,6000/bin);i++)loud=Math.max(loud,db[i]);if(loud<-85)return [];
+ for(let i=Math.max(3,Math.floor(30/bin));i<Math.min(db.length-4,6000/bin);i++){const v=db[i];if(!Number.isFinite(v)||v<Math.max(-80,loud-30)||v<db[i-1]||v<db[i+1])continue;if(noise&&v<Math.max(noise[i],noise[i-1],noise[i+1])+9)continue;if(v-(db[i-3]+db[i+3])/2<7)continue;const delta=.5*(db[i-1]-db[i+1])/(db[i-1]-2*v+db[i+1]||1);peaks.push({f:(i+Math.max(-.5,Math.min(.5,delta)))*bin,db:v})}
+ const near=f=>peaks.find(p=>Math.abs(p.f-f)<Math.max(bin*.65,f*.009)),harmonic=(f,base)=>{const h=Math.round(f/base);return h>=2&&h<=12&&Math.abs(f-h*base)<Math.max(bin*.8,f*.011)};
+ const candidates=peaks.map(p=>({...p,m:69+12*Math.log2(p.f/440)})).filter(p=>Math.round(p.m)>=36&&Math.round(p.m)<=96&&p.db>=loud-24&&Math.abs(p.m-Math.round(p.m))<.32).sort((a,b)=>a.f-b.f),kept=[];
+ for(const p of candidates){let support=0,independent=0;for(let h=2;h<=5;h++){const partial=near(p.f*h);if(partial){support++;if(!kept.some(k=>harmonic(partial.f,k.f)))independent++}}if(kept.some(k=>harmonic(p.f,k.f))&&(independent<2||p.db<loud-9))continue;if(support<2&&p.db<loud-10)continue;if(!kept.some(k=>Math.round(k.m)===Math.round(p.m)))kept.push(p)}return kept.map(p=>Math.round(p.m));
+}
+function match(notes,pcs,bass=null){const set=new Set(notes.map(n=>(n%12+12)%12)),want=new Set(pcs);return set.size===want.size&&[...want].every(n=>set.has(n))&&(bass===null||(notes.length&&Math.min(...notes)%12===bass))}
+class Gate{constructor(hold=300,release=180){this.hold=hold;this.release=release;this.reset()}reset(requireRelease=false){this.key='';this.since=0;this.latched=requireRelease;this.quiet=null}feed(notes,now){if(!notes.length){if(this.quiet===null)this.quiet=now;if(now-this.quiet>=this.release)this.latched=false;this.key='';return null}this.quiet=null;if(this.latched)return null;const key=[...new Set(notes)].sort((a,b)=>a-b).join(',');if(key!==this.key){this.key=key;this.since=now;return null}return now-this.since>=this.hold?notes:null}accept(){this.latched=true}}
+const api={detect,match,Gate};if(typeof module!=='undefined')module.exports=api;g.PolyEngine=api;
+})(typeof window==='undefined'?globalThis:window);
